@@ -1,15 +1,12 @@
 const express = require('express');
-const livereload = require('livereload');
-const connectLivereload = require('connect-livereload');
-const bodyParser = require('body-parser');
+const path = require('path');
 
 const app = express();
+app.listen(8000, () => {
+    console.log('Server is running on port 8000');
+});
 
-// Middleware do parsowania JSON w `req.body`
-app.use(bodyParser.json());
-
-// Middleware LiveReload
-app.use(connectLivereload());
+app.use(cors());
 
 //ADS
 app.get('/', (req, res) => {
@@ -42,6 +39,12 @@ app.get('/api/ads/search/:searchPhrase', (req, res) => {
 });
 
 //AUTH
+app.get('/auth/user', (req, res) => {
+    res.send('<h1>user info</h1>');
+    const { user } = req.body;
+    res.send(`<h1>User: ${user}</h1>`);
+});
+
 app.post('/auth/register', (req, res) => {
     const { username, password } = req.body;
     res.send(`<h1>Registered user: ${username}</h1>`);
@@ -60,17 +63,3 @@ app.use((req, res) => {
     res.status(404).send('404 not found...');
 });
 
-app.listen(8000, () => {
-    console.log('Server is running on port 8000');
-});
-
-// Konfiguracja LiveReload
-const liveReloadServer = livereload.createServer();
-liveReloadServer.watch(__dirname + '/public');
-
-// Automatyczne odświeżenie po uruchomieniu
-liveReloadServer.server.once('connection', () => {
-    setTimeout(() => {
-        liveReloadServer.refresh('/');
-    }, 100);
-});
